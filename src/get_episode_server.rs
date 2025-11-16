@@ -9,18 +9,6 @@ use serde_json::{from_str};
 
 
 
-
-
-#[derive(Debug, Serialize, Deserialize)]
-struct EpisodeInfo{
-    id_type: String,
-    imdb_id: String,
-    tmdb_id: String,
-    s: Option<usize>,
-    e: Option<usize>
-}
-
-
 #[derive(Debug, Serialize, Deserialize)]
 struct EpisodeServerData{
     index: usize,
