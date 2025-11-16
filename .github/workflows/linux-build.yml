@@ -1,0 +1,51 @@
+name: Build Shared Library on Linux
+
+on:
+  push:
+    branches: [build]
+  pull_request:
+    branches: [build]
+
+jobs:
+  build-linux:
+    
+    strategy:
+      matrix:
+        target:
+          - x86_64-unknown-linux-gnu     # Default 64-bit
+          - i686-unknown-linux-gnu       # 32-bit
+          - aarch64-unknown-linux-gnu    # ARM64
+          - armv7-unknown-linux-gnueabihf # ARMv7 (hard float)
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust and Target
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          target: ${{ matrix.target }}
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: '. -> target'
+
+      - name: Install Cross Dependencies
+        run: |
+          cargo install cross
+
+      - name: Build Shared Library
+        run: cross build --release --target ${{ matrix.target }}
+
+      - name: Rename .so to target-specific name
+        run: |
+          mv target/${{ matrix.target }}/release/lib*.so target/${{ matrix.target }}/release/chlaty-lib-moviesapi-${{ matrix.target }}.so
+
+
+      - name: Upload .so Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifact-chlaty-lib-moviesapi-${{ matrix.target }}
+          path: target/${{ matrix.target }}/release/chlaty-lib-moviesapi-${{ matrix.target }}.so

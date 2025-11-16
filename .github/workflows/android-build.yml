@@ -1,0 +1,77 @@
+name: Build Android Shared Libraries
+
+on:
+  push:
+    branches: [build]
+  pull_request:
+    branches: [build]
+
+jobs:
+  build-android:
+    
+    strategy:
+      matrix:
+        include:
+          - target: aarch64-linux-android
+            linker: aarch64-linux-android24-clang
+            envkey: AARCH64_LINUX_ANDROID
+          - target: armv7-linux-androideabi
+            linker: armv7a-linux-androideabi24-clang
+            envkey: ARMV7_LINUX_ANDROIDEABI
+          - target: i686-linux-android
+            linker: i686-linux-android24-clang
+            envkey: I686_LINUX_ANDROID
+          - target: x86_64-linux-android
+            linker: x86_64-linux-android24-clang
+            envkey: X86_64_LINUX_ANDROID
+            
+    runs-on: ubuntu-latest
+
+    env:
+      ANDROID_NDK_VERSION: r26d
+      ANDROID_API_LEVEL: 24
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust Target
+        run: rustup target add ${{ matrix.target }}
+      
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: '. -> target'
+
+      - name: Install Android NDK
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: ${{ env.ANDROID_NDK_VERSION }}
+
+      - name: Set up Linker, AR, and CC
+        run: |
+          TOOLCHAIN=${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin
+
+          # Cargo environment
+          echo "CARGO_TARGET_${{ matrix.envkey }}_AR=$TOOLCHAIN/llvm-ar" >> $GITHUB_ENV
+          echo "CARGO_TARGET_${{ matrix.envkey }}_LINKER=$TOOLCHAIN/${{ matrix.linker }}" >> $GITHUB_ENV
+
+          # cc-rs and ring compatibility
+          echo "AR_${{ matrix.target }}=$TOOLCHAIN/llvm-ar" >> $GITHUB_ENV
+          echo "AR_${{ matrix.envkey }}=$TOOLCHAIN/llvm-ar" >> $GITHUB_ENV
+          echo "CC_${{ matrix.target }}=$TOOLCHAIN/${{ matrix.linker }}" >> $GITHUB_ENV
+          echo "CC_${{ matrix.envkey }}=$TOOLCHAIN/${{ matrix.linker }}" >> $GITHUB_ENV
+          echo "TARGET_CC=$TOOLCHAIN/${{ matrix.linker }}" >> $GITHUB_ENV
+          echo "CC=$TOOLCHAIN/${{ matrix.linker }}" >> $GITHUB_ENV
+
+      - name: Build .so for Android
+        run: cargo build --release --target ${{ matrix.target }}
+      
+      - name: Rename .so to target-specific name
+        run: |
+          mv target/${{ matrix.target }}/release/*.so target/${{ matrix.target }}/release/chlaty-lib-moviesapi-${{ matrix.target }}.so
+
+      - name: Upload .so Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifact-chlaty-lib-moviesapi-${{ matrix.target }}
+          path: target/${{ matrix.target }}/release/chlaty-lib-moviesapi-${{ matrix.target }}.so
