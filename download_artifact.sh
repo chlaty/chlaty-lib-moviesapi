@@ -9,7 +9,7 @@ fi
 # Define ENV
 NAME="chlaty-lib-moviesapi"
 REPO="chlaty/chlaty-lib-moviesapi"
-VERSION="0.1.1"
+VERSION="0.1.2"
 OUTPUT_DIR="artifacts"
 
 
