@@ -13,6 +13,7 @@ pub mod get_episode_list;
 pub mod get_episode_server;
 pub mod get_server;
 pub mod free_ptr;
+pub mod utils;
 
 #[cfg(test)]
 mod test;

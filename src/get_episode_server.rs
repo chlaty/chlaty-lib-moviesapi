@@ -5,7 +5,8 @@ use std::panic;
 use std::ptr;
 
 use serde::{Deserialize, Serialize};
-use serde_json::{from_str};
+use serde_json::{from_str, Value, to_string};
+use urlencoding::{decode, encode};
 
 
 
@@ -16,6 +17,16 @@ struct EpisodeServerData{
     title: String,
     verify_url: Option<String>,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+struct EpisodeInfo{
+    id_type: String,
+    imdb_id: String,
+    tmdb_id: String,
+    s: Option<usize>,
+    e: Option<usize>
+}
+
 
 #[derive(Debug, Serialize, Deserialize)]
 struct ReturnResult {
@@ -56,15 +67,43 @@ pub extern "C" fn get_episode_server(
         
 
         let raw_episode_id = args.episode_id;
+        let mut episode_info: Value = from_str(&decode(&raw_episode_id).unwrap()).unwrap();
 
-        let server_data = vec![
-            EpisodeServerData{
-                id: raw_episode_id,
-                index: 0,
-                title: "MoviesAPI".to_string(),
-                verify_url: None
-            }
-        ];
+
+
+        let mut server_data = vec![];
+
+        episode_info.as_object_mut().unwrap().insert(String::from("source_id"), Value::String(String::from("sflix2")));
+        server_data.push(EpisodeServerData{
+            id: encode(&to_string(&episode_info).unwrap()).to_string(),
+            index: 0,
+            title: "SFlix2".to_string(),
+            verify_url: None
+        });
+
+        // episode_info.as_object_mut().unwrap().insert(String::from("source_id"), Value::String(String::from("m4uhd")));
+        // server_data.push(EpisodeServerData{
+        //     id: encode(&to_string(&episode_info).unwrap()).to_string(),
+        //     index: 0,
+        //     title: "M4UHD".to_string(),
+        //     verify_url: None
+        // });
+
+        // episode_info.as_object_mut().unwrap().insert(String::from("source_id"), Value::String(String::from("bmovies")));
+        // server_data.push(EpisodeServerData{
+        //     id: encode(&to_string(&episode_info).unwrap()).to_string(),
+        //     index: 0,
+        //     title: "BMovies".to_string(),
+        //     verify_url: None
+        // });
+
+        // episode_info.as_object_mut().unwrap().insert(String::from("source_id"), Value::String(String::from("insertunit")));
+        // server_data.push(EpisodeServerData{
+        //     id: encode(&to_string(&episode_info).unwrap()).to_string(),
+        //     index: 0,
+        //     title: "Insertunit".to_string(),
+        //     verify_url: None
+        // });
         
         return_result.data.insert(String::from("SERVER"), server_data);
 

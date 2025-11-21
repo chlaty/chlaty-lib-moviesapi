@@ -5,6 +5,7 @@ mod tests {
     use serde_json::{json, to_string};
     use crate::free_ptr::free_ptr;
 
+
     
     // #[test]
     // fn test_2() {
@@ -67,7 +68,7 @@ mod tests {
         unsafe {
             let args = CString::new(to_string(&json!({
                 "index": 0,
-                "id": String::from("%7B%22e%22%3A0%2C%22id_type%22%3A%22tv%22%2C%22imdb_id%22%3A%22tt9140554%22%2C%22s%22%3A0%2C%22tmdb_id%22%3A%2284958%22%7D"),
+                "id": String::from("%7B%22e%22%3A0%2C%22id_type%22%3A%22tv%22%2C%22imdb_id%22%3A%22tt9140554%22%2C%22s%22%3A0%2C%22source_id%22%3A%22sflix2%22%2C%22tmdb_id%22%3A%2284958%22%7D"),
             })).unwrap()).expect("CString::new failed");
             
             let get_server_ptr = get_server(args.as_ptr());
