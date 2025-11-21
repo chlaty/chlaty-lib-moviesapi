@@ -19,16 +19,6 @@ struct EpisodeServerData{
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct EpisodeInfo{
-    id_type: String,
-    imdb_id: String,
-    tmdb_id: String,
-    s: Option<usize>,
-    e: Option<usize>
-}
-
-
-#[derive(Debug, Serialize, Deserialize)]
 struct ReturnResult {
     status: bool,
     message: String,
