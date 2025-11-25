@@ -94,8 +94,14 @@ pub extern "C" fn search(
 
             /* Do the work here */
             let data:Value = res.json().unwrap();
+            let data_to_obj = match data.as_object() {
+                Some(obj) => obj,
+                None => {
+                    continue;
+                }
+            };
             
-            for (_, value) in data.as_object().unwrap().into_iter() {
+            for (_, value) in data_to_obj.into_iter() {
                 
                 let title: String = value.get("titles")
                     .and_then(|v| v.get("m"))
@@ -103,7 +109,7 @@ pub extern "C" fn search(
                     .as_str().unwrap().to_string();
 
                 let cover: String = format!("https://simkl.in/posters/{}_m.webp",
-                    value.get("poster").unwrap().as_str().unwrap().to_string()
+                    value.get("poster").expect("[Search] Missing poster").as_str().unwrap().to_string()
                 );
 
                 let raw_id: String = value.get("url").unwrap().as_str().unwrap().to_string();
