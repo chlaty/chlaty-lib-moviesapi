@@ -1,5 +1,6 @@
 {
-    "latest-version": "0.1.3",
+    "latest-version": "0.1.4",
+    "0.1.4": "https://github.com/chlaty/chlaty-lib-moviesapi/releases/download/0.1.4/manifest.json",
     "0.1.3": "https://github.com/chlaty/chlaty-lib-moviesapi/releases/download/0.1.3/manifest.json",
     "0.1.2": "https://github.com/chlaty/chlaty-lib-moviesapi/releases/download/0.1.2/manifest.json",
     "0.1.0": "https://github.com/chlaty/chlaty-lib-moviesapi/releases/download/0.1.0/manifest.json"
