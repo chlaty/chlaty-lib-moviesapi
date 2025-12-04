@@ -110,7 +110,7 @@ pub extern "C" fn get_server(
         let raw_episode_id = args.id;
 
         let episode_info: EpisodeInfo = from_str(&decode(&raw_episode_id).unwrap()).unwrap();
-
+        println!("{:?}", episode_info);
         let keys = get_keys(&episode_info);
         
 
@@ -133,8 +133,8 @@ pub extern "C" fn get_server(
 
         let config = Config {
             host: config_host.clone(),
-            referer: "https://ww2.moviesapi.to/".to_string(),
-            origin: "https://ww2.moviesapi.to".to_string(),
+            referer: "https://w1.moviesapi.to/".to_string(),
+            origin: "https://w1.moviesapi.to".to_string(),
             playlist_base_url: format!("https://{}", &config_host),
             segment_base_url: format!("https://{}", &config_host)
         };
@@ -170,13 +170,13 @@ fn get_keys(episode_info: &EpisodeInfo) -> Keys {
         let url:String;
 
         if episode_info.e.is_some() && episode_info.s.is_some() {
-            url = format!("https://ww2.moviesapi.to/tv/{}/{}/{}",
+            url = format!("https://w1.moviesapi.to/tv/{}/{}/{}",
                 episode_info.tmdb_id,
                 episode_info.s.unwrap()+1,
                 episode_info.e.unwrap()+1
             );
         }else{
-            url = format!("https://ww2.moviesapi.to/movie/{}",
+            url = format!("https://w1.moviesapi.to/movie/{}",
                 episode_info.tmdb_id
             );
         }
@@ -188,9 +188,9 @@ fn get_keys(episode_info: &EpisodeInfo) -> Keys {
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
         ));
 
-        headers.insert(HOST, HeaderValue::from_static("ww2.moviesapi.to"));
-        headers.insert(REFERER, HeaderValue::from_static("https://ww2.moviesapi.to/"));
-        headers.insert(ORIGIN, HeaderValue::from_static("https://ww2.moviesapi.to"));
+        headers.insert(HOST, HeaderValue::from_static("w1.moviesapi.to"));
+        headers.insert(REFERER, HeaderValue::from_static("https://w1.moviesapi.to/"));
+        headers.insert(ORIGIN, HeaderValue::from_static("https://w1.moviesapi.to"));
 
         /* Fetch Script URL */
 
@@ -214,7 +214,7 @@ fn get_keys(episode_info: &EpisodeInfo) -> Keys {
             if let Some(src) = script_ele.attr("src") {
                 if let Some(script_type) = script_ele.attr("type") {
                     if script_type.to_string() == "module" {
-                        script_url = format!("https://ww2.moviesapi.to{}", src);
+                        script_url = format!("https://w1.moviesapi.to{}", src);
                     }
                 }
             }
@@ -326,15 +326,15 @@ fn get_hls_and_track(episode_info: &EpisodeInfo, keys: &Keys) -> HlsAndTrack {
         "Chrome/142.0.0.0 Safari/537.36"
     ));
     headers.insert(ACCEPT_ENCODING, HeaderValue::from_static("gzip, deflate, br"));
-    headers.insert(HOST, HeaderValue::from_static("ww2.moviesapi.to"));
-    headers.insert(REFERER, HeaderValue::from_static("https://ww2.moviesapi.to/"));
-    headers.insert(ORIGIN, HeaderValue::from_static("https://ww2.moviesapi.to"));
+    headers.insert(HOST, HeaderValue::from_static("w1.moviesapi.to"));
+    headers.insert(REFERER, HeaderValue::from_static("https://w1.moviesapi.to/"));
+    headers.insert(ORIGIN, HeaderValue::from_static("https://w1.moviesapi.to"));
     headers.insert(HeaderName::from_static("x-player-key"),
         HeaderValue::from_str(&keys.player_api_key).unwrap()
     );
 
 
-    let res = client.post("https://ww2.moviesapi.to/api/scrapify/v1/fetch")
+    let res = client.post("https://w1.moviesapi.to/api/scrapify/v1/fetch")
         .headers(headers)
         .json(&json!({
             "payload": encrypted_aes
